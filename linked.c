@@ -18,23 +18,32 @@ typedef struct list List;
 List *head = NULL;
 List *tail = NULL;
 
+// Remove the refuse
 List *drop_node(List *node) {
   List *ptr;
 
   if (!node) {
+    // Our work here is done
     return (NULL);
   } else {
+
+    // If we're not the head of the list,
+    // link previous element to next
+
     if (node->prev) {
       node->prev->next = node->next;
-    }
+    } else
 
-    if (node->next) {
-      node->next->prev = node->prev;
-    } else {
-      tail = node->prev;
-    }
+      // If we're a middle element, backlink to previous node.
+      // Otherwise, set tail to previous node;
 
-    ptr = node->next;
+      if (node->next) {
+        node->next->prev = node->prev;
+      } else {
+        tail = node->prev;
+      }
+
+    ptr = node->next ? node->next : node->prev;
 
     free(node);
     // node = NULL;
@@ -44,21 +53,28 @@ List *drop_node(List *node) {
   return (NULL);
 }
 
+// Genesis!
+
 List *new_node(char *str) {
   List *ptr;
 
+  // List::new()
+
   List *new = malloc(sizeof(List));
   memset(new, 0, sizeof(List));
-
   strncpy(new->buf, str, ITEM_SZ - 1);
 
+  // `(' we are born!
   if (!head) {
     new->next = new->prev = NULL;
     head = tail = new;
     return (new);
   }
 
+  // This is the ennnnnnd, beautiful friend.
   ptr = tail;
+
+  // List::add()
 
   ptr->next = new;
   new->prev = ptr;
@@ -68,31 +84,18 @@ List *new_node(char *str) {
 }
 
 int main(int argc, char **argv) {
-  char *populate[10] = {"\nWe",  "are", "going", "to",     "add",
+  char *populate[10] = {"We",    "are", "going", "to",     "add",
                         "these", "to",  "a",     "linked", "list"};
   printf("List size = %lu\n", sizeof(List));
 
-  head = tail = new_node("Fuck");
-  tail = new_node("the");
-  tail = new_node("Yankees!");
-
   List *ptr;
-
-  for (ptr = head; ptr != NULL; ptr = ptr->next) {
-    if (ptr->next != NULL) {
-      printf("%s ", ptr->buf);
-    } else {
-      printf("%s!\n", ptr->buf);
-    }
-  }
-
-  ptr = tail;
-
-  printf("0x%lx\n", (unsigned long)ptr->prev);
 
   int i;
 
-  for (i = 0; i < 10; i++) {
+  head = tail = new_node(populate[0]);
+  ptr = head;
+
+  for (i = 1; i < 10; i++) {
     tail = new_node(populate[i]);
   }
 
@@ -102,14 +105,9 @@ int main(int argc, char **argv) {
 
   ptr = head;
   while (ptr != NULL) {
-    if (ptr->next != NULL) {
-      printf("[%s] ", ptr->buf);
-      head = ptr->next;
-      ptr = drop_node(ptr);
-    } else {
-      printf("[%s]!\n", ptr->buf);
-      ptr = drop_node(ptr);
-    }
+    printf("[%s]%c", ptr->buf, ptr->next ? ' ' : '\n');
+    head = ptr->next;
+    ptr = drop_node(ptr);
   }
 
   exit(0);
