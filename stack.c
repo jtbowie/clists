@@ -47,7 +47,7 @@ char *pop_node() {
   List *ptr;
   char *elem;
 
-  // If tail is NULL, there are no items in the list.
+  // If head is NULL, there are no items in the list.
 
   if (!head) {
     return (NULL);
